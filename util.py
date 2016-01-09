@@ -9,6 +9,12 @@ def read_file(filename, requester):
   except FileNotFoundError:
     log.error('could not open "' + filename + '" for reading', requester=requester)
 
+def open_file(filename, flags, requester):
+  try:
+    return open(filename, flags)
+  except FileNotFoundError:
+    log.error('could not open "' + filename + '" with flags "' + flags + '"', requester=requester)
+
 def write_file(filename, contents, requester):
   os.makedirs(os.path.normpath(os.path.dirname(filename)), exist_ok=True)
   open(filename, 'w').write(contents)
