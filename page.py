@@ -134,6 +134,9 @@ class MarkdownPage(Page):
   def set_title(self, title):
     self.title = title
 
+  def add_author(self, author):
+    self.authors.append(author)
+
   ########################
   # INPUT
   ########################
@@ -141,6 +144,8 @@ class MarkdownPage(Page):
   def parse_header_line(self, key, value):
     if key == 'title':
       self.set_title(value)
+    elif key == 'author':
+      self.add_author(value)
     else:
       log.warning('unknown key "' + key + '"', self.get_unique_identifier())
 
