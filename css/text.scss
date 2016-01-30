@@ -1,0 +1,14 @@
+
+@mixin text() {
+  line-height: 150%;
+
+  p + p {
+    margin-top: 0.5em;
+    text-indent: 2em;
+  }
+  
+}
+
+.text {
+  @include text();
+}

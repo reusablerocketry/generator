@@ -1,0 +1,24 @@
+
+@import 'values';
+
+body.author main {
+
+  header {
+    padding: $unit $body-padding-horizontal;
+
+    h1.name {
+      @include title();
+    }
+    
+  }
+
+  .contents .text {
+    background-color: $body-background;
+    
+    border: $border-width solid $border-color;
+    border-radius: $border-radius;
+
+    padding: $body-padding-vertical $body-padding-horizontal;
+  }
+  
+}

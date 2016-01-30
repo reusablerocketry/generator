@@ -8,14 +8,11 @@ md = {}
 
 md['ext'] = '.md'
 
-# template
-
-template = {}
-
-template['page.html'] = 'page' + html['ext']
-
 # path
 
-path = {}
+input_path = {}
 
-path['static'] = 'static'
+input_path['static'] = 'static'
+input_path['authors'] = 'authors'
+input_path['css'] = 'css'
+input_path['terms'] = 'terms'

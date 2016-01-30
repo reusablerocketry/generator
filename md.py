@@ -1,5 +1,7 @@
 
 import markdown
+import util
+import log
 
 from markdown.treeprocessors import Treeprocessor
 from markdown.extensions import Extension
@@ -35,6 +37,63 @@ class ImageTreeprocessor(Treeprocessor):
         self.markdown.images.append(element.attrib['src'])
 
 ################################################
+# TERM LISTINGS
+################################################
+
+class LinkExtension(Extension):
+
+  def extendMarkdown(self, md, md_globals):
+    
+    treeprocessor = LinkTreeprocessor(md)
+    md.treeprocessors['links'] = treeprocessor
+
+class LinkTreeprocessor(Treeprocessor):
+  
+  def children(self, element):
+    children = []
+
+    for node in element:
+      children.append(node)
+      if len(node):
+        children.extend(self.children(node))
+    return children
+
+  def redirect_term(self, url):
+    term = self.markdown.builder.get_term(util.to_slug(url))
+    if term:
+      return term.get_term_link()
+    else:
+      log.warning('redirecting nonexistent term "' + url + '" to Wikipedia')
+      return self.redirect_wikipedia(url)
+
+  def redirect_wikipedia(self, url):
+    return 'https://en.wikipedia.org/wiki/' + util.to_wiki(url)
+
+  def redirect(self, element):
+    href = element.attrib['href']
+    both = href.split(':', 1)
+    link_type = both[0]
+
+    if len(both) == 1:
+      url = element.text
+    else:
+      url = both[1]
+      
+    if link_type == 'term':
+      href = self.redirect_term(url)
+    elif link_type in ['wikipedia', 'wiki']:
+      href = self.redirect_wikipedia(url)
+      
+    element.attrib['href'] = href
+    
+  def run(self, root):
+    self.markdown.links = []
+    
+    for element in self.children(root):
+      if element.tag == 'a':
+        self.redirect(element)
+
+################################################
 # MARKDOWN
 ################################################
 
@@ -57,7 +116,8 @@ class Markdown:
     if self.converted: return
     self.converted = True
     
-    self.md = markdown.Markdown(extensions=[ImageExtension()], output_format='html5')
+    self.md = markdown.Markdown(extensions=[ImageExtension(), LinkExtension()], output_format='html5')
+    self.md.builder = self.builder
     self.html = self.md.convert(self.content)
 
   def get_html(self):

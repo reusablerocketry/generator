@@ -1,0 +1,16 @@
+
+@import 'values';
+
+#footer {
+  background-color: $footer-background;
+  border-top: $border-width solid $border-color;
+  
+  .contents {
+    max-width: $body-width;
+    width: 100%;
+    margin: 0 auto;
+
+    padding: $footer-padding-vertical $footer-padding-horizontal;
+  }
+
+}

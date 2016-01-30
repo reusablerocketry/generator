@@ -1,0 +1,76 @@
+
+$unit: 8px;
+
+$theme-color: #07f;
+$page-width: 1024px;
+
+$page-background: #f9f9f9;
+
+$body-background: #fff;
+$body-foreground: #333;
+
+$body-padding-horizontal: $unit * 4;
+$body-padding-vertical: $unit * 4;
+$body-width: $page-width + $body-padding-horizontal * 2;
+
+$body-spacing: $unit * 4;
+
+// LINK
+
+$link-color: mix($theme-color, $body-background, 35%);
+
+// TITLE
+
+$title-font-family: Montserrat;
+$title-color: mix($body-foreground, $body-background, 70%);
+
+// HEADER
+
+$header-background: $body-background;
+$header-foreground: lighten($body-foreground, 50%);
+$header-foreground-active: $body-foreground;
+
+$header-logo-width: 200px;
+$header-logo-height: 64px;
+
+$header-font-size: $unit * 2;
+$header-font-family: Montserrat;
+
+$header-spacing: $unit * 2;
+
+$header-height: $header-logo-height;
+
+$header-total-height: $header-height;
+
+// SIDEBAR
+
+$sidebar-spacing: $unit;
+$sidebar-padding-horizontal: $unit * 3;
+$sidebar-padding-vertical: $unit * 1;
+
+// BORDER
+
+$border-width: 1px;
+$border-color: darken($body-background, 20%);
+
+$border-radius: 4px;
+
+// FOOTER
+
+$footer-background: $body-background;
+
+$footer-padding-horizontal: $unit * 4;
+$footer-padding-vertical: $unit * 2;
+
+@mixin title() {
+  font-size: 200%;
+  font-family: Montserrat;
+  text-transform: uppercase;
+  color: $title-color;
+}
+
+@mixin author() {
+  font-family: serif;
+  font-weight: 100;
+  font-style: italic;
+}

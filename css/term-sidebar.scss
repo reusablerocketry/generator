@@ -1,0 +1,43 @@
+
+@import 'values';
+
+#term-sidebar {
+  float: right;
+
+  border: $border-width solid $border-color;
+  border-width: 0 0 $border-width $border-width;
+  border-radius: 0 0 0 $border-radius;
+
+  margin-top: -$body-padding-vertical;
+  margin-right: -$body-padding-horizontal;
+  margin-left: $body-padding-horizontal;
+  margin-bottom: $body-padding-vertical;
+
+  padding-top: $body-padding-vertical - $sidebar-padding-vertical - $sidebar-spacing;
+    
+  .section {
+
+    padding: $sidebar-spacing 0;
+
+    header, ul {
+      padding: $sidebar-padding-vertical $sidebar-padding-horizontal;
+    }
+
+    header {
+      border-bottom: $border-width solid $border-color;
+
+      h1 {
+        @include title();
+        font-size: 100%;
+      }
+    }
+
+    ul {
+
+      list-style-type: none;
+      
+    }
+    
+  }
+  
+}

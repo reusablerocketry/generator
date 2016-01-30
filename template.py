@@ -36,14 +36,27 @@ class Template:
     self.content = util.read_file(self.get_filename(), 'Template')
 
   # returns a list of arguments that the formatter must provide values for
-  def get_args(self):
+  def get_required_args(self):
     return re.findall(format_match_re, self.content)
 
+  def get_args(self, formatter, required_args, overrides={}):
+    args = {}
+    for key in required_args:
+      value = formatter.get_arg(key)
+      if value == None:
+        if key in overrides:
+          args[key] = overrides[key]
+          continue
+        log.warning('key "' + key + '" not found ', formatter.get_unique_identifier())
+      args[key] = value
+    return args
+  
   # returns the formatted version of self.content
-  def render(self, formatter):
+  def render(self, formatter, overrides={}):
     if not self.content:
       log.error('template cannot render without content')
-    return self.content.format(**formatter.get_args(self.get_args()))
+    args = self.get_args(formatter, self.get_required_args(), overrides)
+    return self.content.format(**args)
 
 ################################################
 # Templates
@@ -62,5 +75,5 @@ class Templates:
     return self.templates[filename]
 
   # returns the rendered version of the template
-  def render(self, filename, formatter):
-    return self.get_template(filename).render(formatter)
+  def render(self, filename, formatter, overrides={}):
+    return self.get_template(filename).render(formatter, overrides)

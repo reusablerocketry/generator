@@ -36,9 +36,14 @@ def progress(name):
   print('   ' + name + '... ', end='')
   
 def progress_step(step):
+  global in_progress
+  if not in_progress:
+    print('   ', end='')
   print(step + '... ', end='')
   
 def progress_done():
   global in_progress
+  if not in_progress:
+    print('   ', end='')
   in_progress = False
   print('done.')

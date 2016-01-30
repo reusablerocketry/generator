@@ -30,6 +30,10 @@ class Path:
     self.output_root = output_root
     self.output_ext = output_ext
 
+  ########################
+  # SET FILENAMES
+  ########################
+    
   def set_input_filename(self, filename):
     self.input_filename = os.path.splitext(filename)[0]
     self.input_ext = os.path.splitext(filename)[1]
@@ -37,6 +41,20 @@ class Path:
   def set_output_filename(self, filename):
     self.output_filename = os.path.splitext(filename)[0]
     self.output_ext = os.path.splitext(filename)[1]
+
+  ########################
+  # SET PATHS
+  ########################
+    
+  def set_input_path(self, path):
+    split = os.path.split(path)
+    self.input_root = split[0]
+    self.set_input_filename(split[1])
+    
+  def set_output_path(self, path):
+    split = os.path.split(path)
+    self.output_root = split[0]
+    self.set_output_filename(split[1])
     
   # returns a duplicate of self
   def copy():
@@ -54,3 +72,7 @@ class Path:
     return os.path.join(self.builder.path['output'],
                         self.output_root,
                         (filename or self.output_filename) + self.output_ext)
+  
+  def get_link_path(self, filename=''):
+    return '/' + os.path.join(self.output_root,
+                              (filename or self.output_filename) + self.output_ext)

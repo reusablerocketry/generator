@@ -1,0 +1,38 @@
+
+@import 'values';
+
+@import 'term-sidebar';
+
+body.markdown main {
+
+  header {
+    padding: $unit $body-padding-horizontal;
+
+    h1.name {
+      @include title();
+      display: inline-block;
+    }
+
+    h2.authors {
+      padding-top: $unit;
+      @include author();
+
+      .author {
+        color: mix($theme-color, $body-foreground, 80%);
+        font-weight: bold;
+      }
+      
+    }
+    
+  }
+
+  .contents .text {
+    background-color: $body-background;
+    
+    border: $border-width solid $border-color;
+    border-radius: $border-radius;
+
+    padding: $body-padding-vertical $body-padding-horizontal;
+  }
+  
+}

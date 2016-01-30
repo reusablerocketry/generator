@@ -27,3 +27,21 @@ def to_slug(name, maxlength=100):
   if len(name) == maxlength: name += '-'
   return name
 
+def to_wiki(name):
+  name = '_'.join(name.split()).title()
+  name = re.sub('[^0-9a-zA-Z\_]+', '', name)
+  return name
+
+def andify(items):
+  if len(items) == 0:
+    return ''
+  elif len(items) == 1:
+    return items[0]
+  elif len(items) == 2:
+    return items[0] + ' and ' + items[1]
+  else:
+    anded = ''
+    for i in range(len(items) - 1):
+      anded += items[i] + ', '
+    anded += 'and ' + items[i-1]
+    return anded

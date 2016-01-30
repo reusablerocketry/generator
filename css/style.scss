@@ -1,0 +1,26 @@
+
+@import 'reset';
+
+@import 'values';
+
+@import 'text';
+
+@import 'header';
+@import 'main';
+@import 'footer';
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+}
+
+html {
+  background-color: $page-background;
+}
+
+body {
+  color: $body-foreground;
+  display: flex;
+  flex-direction: column;
+}
+

@@ -85,5 +85,7 @@ class Languages:
     if not key:
       key = language
       language = self.default_language
+    if not language:
+      language = self.default_language
     return self.get_language(language).get(key)
   

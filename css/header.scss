@@ -1,0 +1,72 @@
+
+@import 'values';
+
+#header {
+  background-color: $header-background;
+  border-bottom: $border-width solid $border-color;
+
+  position: relative;
+  
+  height: $header-total-height;
+
+  line-height: 0;
+
+  .container {
+
+    max-width: $page-width;
+    margin: 0 auto;
+    position: relative;
+
+    #logo {
+      background-color: $theme-color;
+      
+      display: inline-block;
+      width: $header-logo-width;
+      height: $header-logo-height;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+      
+    }
+
+    .categories {
+      display: inline-block;
+      height: $header-height;
+      line-height: $header-total-height;
+      vertical-align: top;
+
+      margin-left: $header-spacing * 2;
+
+      a {
+        color: $header-foreground;
+        
+        font-family: $header-font-family;
+        text-transform: uppercase;
+        font-size: $header-font-size;
+        line-height: $header-height;
+
+        display: inline-block;
+        height: $header-height;
+        padding: 0 $header-spacing;
+        vertical-align: top;
+
+        &.active {
+          color: $header-foreground-active;
+          box-shadow: inset 0 -$border-width 0 $theme-color;
+        }
+        
+      }
+
+      a.about {
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+      
+    }
+
+  }
+  
+}
