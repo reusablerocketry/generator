@@ -15,4 +15,6 @@ input_path = {}
 input_path['static'] = 'static'
 input_path['authors'] = 'authors'
 input_path['css'] = 'css'
+input_path['articles'] = 'articles'
+input_path['media'] = 'media'
 input_path['terms'] = 'terms'

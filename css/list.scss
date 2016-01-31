@@ -31,6 +31,13 @@ body.list main {
         @include title();
         font-size: 100%;
       }
+
+      &.empty-list {
+        padding: $list-padding-vertical $body-padding-horizontal;
+        display: block;
+        @include title();
+        font-size: 100%;
+      }
       
     }
 

@@ -4,7 +4,7 @@ import os
 
 import log
 
-from page import Page, AboutPage, ListPage
+from page import Page, AboutPage, ListPage, HomePage
 from author import AuthorPage
 from term import *
 from template import Templates
@@ -34,10 +34,14 @@ class Builder:
     self.languages = Languages(self.path['languages'], language)
 
     self.authors = []
+    self.pages = []
     self.terms = []
 
     self.get_authors()
+    self.get_pages()
     self.get_terms()
+    
+    self.get_synonyms()
 
   def get_file_list(self, root, ext='md'):
     root = os.path.join(self.path['input'], root)
@@ -62,24 +66,38 @@ class Builder:
       self.authors.append(AuthorPage(self, a))
     self.parse_authors()
 
+  def get_pages(self):
+    articles = self.get_file_list(config.input_path['articles'])
+    media = self.get_file_list(config.input_path['media'])
+    for p in articles + media:
+      self.pages.append(PagePage(self, p))
+      
+    self.parse_pages()
+
   def get_terms(self):
     terms = self.get_file_list(config.input_path['terms'])
     for t in terms:
       self.terms.append(TermPage(self, t))
       
     self.parse_terms()
-    self.get_synonyms()
 
   def get_synonyms(self):
     self.synonyms = {}
-    for t in self.terms:
-      synonyms = t.get_synonyms()
+    for p in self.terms + self.pages:
+      synonyms = p.get_synonyms()
       for x in synonyms:
-        self.synonyms[t.get_slug()] = x
+        self.synonyms[p.get_slug()] = x
 
   def parse_authors(self):
     for a in self.authors:
       a.parse()
+
+  def parse_pages(self):
+    for p in self.pages:
+      p.parse()
+      
+    for p in self.pages:
+      p.collect()
 
   def parse_terms(self):
     for t in self.terms:
@@ -115,6 +133,10 @@ class Builder:
     p = AboutPage(self)
     p.build()
 
+  def build_home(self):
+    p = HomePage(self)
+    p.build()
+
   def build_stylesheet(self):
     os.system('sassc ' + os.path.join(self.path['css'], 'style.scss') + ' ' + os.path.join(self.path['output'], 'style.css'))
   
@@ -141,6 +163,15 @@ class Builder:
     self.build_list('rockets', [x for x in self.terms if type(x.get_term()) is RocketTerm])
     self.build_list('spacecraft', [x for x in self.terms if type(x.get_term()) is SpacecraftTerm])
   
+  def build_pages_list(self):
+    self.build_list('pages', self.pages)
+    
+  def build_articles_list(self):
+    self.build_list('articles', self.pages)
+    
+  def build_media_list(self):
+    self.build_list('media', self.pages)
+    
   def build(self, language=None):
     self.templates = Templates(self.path['templates'])
     self.languages.set_default_language(language or self.language)
@@ -153,7 +184,13 @@ class Builder:
     self.build_stylesheet()
     
     self.build_logo()
+    
+    self.build_home()
 
+    self.build_pages_list()
+    self.build_articles_list()
+    self.build_media_list()
+    
     self.build_terms_list()
     
 if __name__ == '__main__':

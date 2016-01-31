@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./build.sh
+./build.py
 
 cd output
 echo "Commit message:" `date`

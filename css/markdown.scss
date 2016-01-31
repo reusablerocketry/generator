@@ -36,10 +36,12 @@ body.markdown main {
 
     @include clear();
 
-    @include small {
+    @include lt-small() {
       border-left-width: 0;
       border-right-width: 0;
       border-radius: 0;
+      padding-left: $body-padding-horizontal-small;
+      padding-right: $body-padding-horizontal-small;
     }
     
     #synonyms {
@@ -48,7 +50,6 @@ body.markdown main {
       font-family: serif;
       opacity: 0.7;
       font-size: 90%;
-      text-indent: $unit * 2;
     }
     
   }

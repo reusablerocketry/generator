@@ -804,8 +804,8 @@ class ConfigurationTerm(VehicleTerm):
   def calculate_payloads(self):
     dests = {
       'leo': 9700,
-      'gto': 9700 + 1800,
-      'tmi': 9700 + 4300,
+      'gto': 9700 + 2440,
+      'tmi': 9700 + 4200,
     }
 
     for x in dests:

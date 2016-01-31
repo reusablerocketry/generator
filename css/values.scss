@@ -13,6 +13,8 @@ $body-padding-horizontal: $unit * 4;
 $body-padding-vertical: $unit * 4;
 $body-width: $page-width + $body-padding-horizontal * 2;
 
+$body-padding-horizontal-small: $unit * 2;
+
 $body-spacing: $unit * 4;
 
 // LINK
@@ -110,6 +112,12 @@ $desktop-width: $page-width + $unit * 16;
 
 @mixin small {
   @media (min-width: #{$mobile-width}) and (max-width: #{$desktop-width - 1px}) {
+    @content;
+  }
+}
+
+@mixin lt-small {
+  @media (max-width: #{$desktop-width - 1px}) {
     @content;
   }
 }

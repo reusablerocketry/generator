@@ -85,6 +85,7 @@ class Page:
     self.slug = slug
 
   def refers_to(self, slug):
+    if util.to_slug(self.get_title()) == slug: return True
     if self.get_slug() == slug: return True
     if slug in [util.to_slug(s) for s in self.synonyms]: return True
     return False
@@ -348,6 +349,16 @@ class AboutPage(StaticPage):
     self.path.set_input_filename('about' + config.md['ext'])
     self.slug = 'about'
     
+class HomePage(StaticPage):
+
+  def init_static_page(self):
+    self.path.set_input_filename('home' + config.md['ext'])
+    self.slug = ''
+    
+  def init_paths(self):
+    super().init_paths()
+    self.path.output_root = ''
+    
 ################################################
 # Misc Static Pages
 ################################################
@@ -370,6 +381,8 @@ class ListPage(Page):
     items = []
     for page in self.pages:
       items.append(page.render_list_html())
+    if not items:
+      return self.builder.templates.render('list-empty.html', self)
     return ''.join(items)
 
   def get_arg(self, key):

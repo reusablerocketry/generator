@@ -19,15 +19,15 @@
 
   width: $sidebar-width;
 
-  @include small {
+  @include lt-small {
     border-radius: 0;
     border: none;
     float: none;
     width: 100vw;
     margin: 0;
     margin-top: -$body-padding-vertical;
-    margin-right: -$body-padding-horizontal;
-    margin-left: -$body-padding-horizontal;
+    margin-right: -$body-padding-horizontal-small;
+    margin-left: -$body-padding-horizontal-small;
     border-bottom: $border-width solid $border-color;
     margin-bottom: $body-padding-vertical;
   }
@@ -40,17 +40,59 @@
       padding: $sidebar-padding-vertical $sidebar-padding-horizontal;
     }
 
+    @include lt-small {
+      padding: 0;
+    }
+
     header {
+      
+      @include lt-small {
+        padding-left: $body-padding-horizontal-small;
+        padding-right: $body-padding-horizontal-small;
+        border-bottom: $border-width solid $border-color;
+      }
 
       h1 {
         @include title();
         font-size: 100%;
       }
+      
     }
 
     ul {
 
       list-style-type: none;
+
+      @include lt-small {
+        padding: 0;
+        width: 100%;
+      }
+      
+      li {
+        display: block;
+        
+        > a {
+          display: inline-block;
+          
+          @include lt-small {
+            padding: $unit $body-padding-horizontal-small;
+            display: block;
+            width: 100%;
+            box-shadow: none;
+            font-weight: bold;
+          }
+          
+        }
+
+      }
+
+      li + li {
+        
+        @include lt-small {
+          border-top: $border-width solid rgba($border-color, 0.5);
+        }
+        
+      }
       
     }
 
@@ -87,6 +129,15 @@
           margin-top: -1px; // hide duplicates
         }
 
+        @include lt-small {
+          
+          dt, dd {
+            padding-left: $body-padding-horizontal-small;
+            padding-right: $body-padding-horizontal-small;
+          }
+          
+        }
+      
       }
 
     }
