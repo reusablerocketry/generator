@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto+Mono:400,700|Roboto');
+
 @import 'reset';
 
 @import 'values';
@@ -16,6 +18,7 @@ html, body {
 
 html {
   background-color: $page-background;
+  font-family: 'Roboto', sans-serif;
 }
 
 body {

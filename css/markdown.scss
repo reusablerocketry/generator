@@ -23,6 +23,17 @@ body.markdown main {
       }
       
     }
+
+    
+    @include lt-small {
+      padding: $unit $body-padding-horizontal-small;
+
+      h1.name {
+        font-size: 120%;
+        font-weight: bold;
+      }
+    }
+
     
   }
 
