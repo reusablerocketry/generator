@@ -1,0 +1,6 @@
+[submodule "output"]
+	path = output
+	url = https://github.com/reusablerocketry/reusablerocketry.github.io.git
+[submodule "input"]
+	path = input
+	url = https://github.com/reusablerocketry/input
