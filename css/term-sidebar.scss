@@ -17,11 +17,24 @@
 
   z-index: 10;
 
+  width: $sidebar-width;
+
+  @include small {
+    border-radius: 0;
+    border: none;
+    float: none;
+    width: 100vw;
+    margin: 0;
+    margin-top: -$body-padding-vertical;
+    margin-right: -$body-padding-horizontal;
+    margin-left: -$body-padding-horizontal;
+    border-bottom: $border-width solid $border-color;
+    margin-bottom: $body-padding-vertical;
+  }
+
   .section {
 
     padding: $sidebar-spacing 0;
-
-    width: $sidebar-width;
 
     header, ul {
       padding: $sidebar-padding-vertical $sidebar-padding-horizontal;

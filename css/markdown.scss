@@ -36,6 +36,12 @@ body.markdown main {
 
     @include clear();
 
+    @include small {
+      border-left-width: 0;
+      border-right-width: 0;
+      border-radius: 0;
+    }
+    
     #synonyms {
       font-style: italic;
       padding-bottom: $unit * 2;

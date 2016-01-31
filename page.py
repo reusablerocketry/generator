@@ -202,6 +202,8 @@ class MarkdownPage(Page):
   def parse_header_line(self, key, value):
     if key == 'title':
       self.set_title(value)
+    elif key == 'comment':
+      pass
     elif key == 'abbreviation':
       self.set_abbreviation(value)
     elif key == 'author':
@@ -231,6 +233,9 @@ class MarkdownPage(Page):
 
       # empty line
       if not line: continue
+
+      if line.startswith('//'): continue
+      if line.startswith('#'): continue
 
       # end of keys
       if not markdown_page_header_re.match(line):

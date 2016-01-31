@@ -2,6 +2,7 @@
 import os
 import re
 import log
+import math
 
 def read_file(filename, requester):
   try:
@@ -50,3 +51,7 @@ def boolean(s):
   s = s.lower()
   if s in ['true', '1', 'yes']: return True
   return False
+
+def dv(isp, start, end):
+  return isp * 9.81 * math.log(start / end)
+      
