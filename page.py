@@ -30,7 +30,14 @@ class Page:
     self.output_root = ''
     self.language = None
 
+    self.abbreviation = None
+
     self.parsed = False
+
+    self.synonyms = []
+    
+  def get_synonyms(self):
+    return self.synonyms
 
   def get_string(self, key):
     return self.builder.languages.get(self.language, key)
@@ -46,12 +53,18 @@ class Page:
   def get_title(self):
     return self.title or self.builder.languages.get('untitled-page')
 
+  def get_abbreviation(self):
+    return self.abbreviation or self.get_title()
+
   ########################
   # PATH
   ########################
 
   def get_output_path(self, filename=''):
     return self.path.get_output_path(filename)
+
+  def get_input_path(self, filename=''):
+    return self.path.get_input_path(filename)
 
   # sets up input/output paths
   def init_paths(self):
@@ -64,8 +77,23 @@ class Page:
   def set_title(self, title):
     self.title = title
 
+  def set_abbreviation(self, abbreviation):
+    self.add_synonym(abbreviation)
+    self.abbreviation = abbreviation
+
   def set_slug(self, slug):
     self.slug = slug
+
+  def refers_to(self, slug):
+    if self.get_slug() == slug: return True
+    if slug in [util.to_slug(s) for s in self.synonyms]: return True
+    return False
+
+  def add_synonym(self, synonym):
+    self.synonyms.append(synonym)
+
+  def get_link_path(self):
+    return self.path.get_link_path()
 
   ########################
   # RENDERING
@@ -80,14 +108,30 @@ class Page:
       return ' '.join(self.get_body_classes())
     elif key == 'page-title':
       return self.get_title()
+    elif key == 'page-abbreviation':
+      return self.get_abbreviation()
+    elif key == 'page-link':
+      return self.get_link_path()
     elif key == 'site-name':
       return self.builder.get_site_name()
+    elif key == 'page-synonyms':
+      if self.synonyms:
+        return self.builder.templates.render('page-synonyms.html', self)
+      return ''
+    elif key == 'page-synonyms-list':
+      lang_string = 'page-synonyms'
+      if len(self.synonyms) > 1:
+        lang_string = 'page-synonyms-plural'
+      return self.get_string(lang_string).format(util.andify(self.synonyms, 'or'))
     elif key == 'main-classes':
       return ''
 
   # return the full page HTML
   def render_page_html(self):
     return self.builder.templates.render('page.html', self)
+
+  def render_list_html(self):
+    return self.builder.templates.render('list-item.html', self)
 
   ########################
   # BUILDING
@@ -141,27 +185,15 @@ class MarkdownPage(Page):
   def __init__(self, builder):
     super().__init__(builder)
     
-    self.synonyms = []
-    
     self.authors = []
     self.output_root = ''
     
-  ########################
-  # PATH
-  ########################
-
-  def get_input_path(self, filename=''):
-    return self.path.get_input_path(filename)
-
   ########################
   # SETTERS
   ########################
 
   def add_author(self, author):
     self.authors.append(author)
-
-  def add_synonym(self, synonym):
-    self.synonyms.append(synonym)
 
   ########################
   # INPUT
@@ -170,12 +202,14 @@ class MarkdownPage(Page):
   def parse_header_line(self, key, value):
     if key == 'title':
       self.set_title(value)
+    elif key == 'abbreviation':
+      self.set_abbreviation(value)
     elif key == 'author':
       self.add_author(value)
-    elif key == 'slug':
-      self.set_slug(value)
     elif key == 'synonym':
       self.add_synonym(value)
+    elif key == 'slug':
+      self.set_slug(value)
     else:
       return False
     return True
@@ -308,3 +342,35 @@ class AboutPage(StaticPage):
   def init_static_page(self):
     self.path.set_input_filename('about' + config.md['ext'])
     self.slug = 'about'
+    
+################################################
+# Misc Static Pages
+################################################
+
+class ListPage(Page):
+
+  def __init__(self, builder, pages, output_root=''):
+    super().__init__(builder)
+
+    self.pages = pages
+
+    self.pages.sort(key=lambda a: a.get_title())
+
+    self.output_root = output_root
+    
+  def get_body_classes(self):
+    return super().get_body_classes() + ['list']
+
+  def get_list_contents(self):
+    items = []
+    for page in self.pages:
+      items.append(page.render_list_html())
+    return ''.join(items)
+
+  def get_arg(self, key):
+    if key == 'list-contents':
+      return self.get_list_contents()
+    elif key == 'page-contents':
+      return self.builder.templates.render('list.html', self)
+    else:
+      return super().get_arg(key)

@@ -13,18 +13,21 @@
   margin-left: $body-padding-horizontal;
   margin-bottom: $body-padding-vertical;
 
-  padding-top: $body-padding-vertical - $sidebar-padding-vertical - $sidebar-spacing;
-    
+  position: relative;
+
+  z-index: 10;
+
   .section {
 
     padding: $sidebar-spacing 0;
+
+    width: $sidebar-width;
 
     header, ul {
       padding: $sidebar-padding-vertical $sidebar-padding-horizontal;
     }
 
     header {
-      border-bottom: $border-width solid $border-color;
 
       h1 {
         @include title();
@@ -37,7 +40,60 @@
       list-style-type: none;
       
     }
+
+    &.infobox {
+      
+      dl {
+
+        .twr.altitude-vac {
+          display: none;
+        }
+      
+        dt {
+          padding: $sidebar-padding-vertical $sidebar-padding-horizontal;
+          width: $sidebar-key-width;
+          float: left;
+          clear: left;
+          font-style: italic;
+          text-align: right;
+          opacity: 0.8;
+        }
+        
+        dd {
+          padding: $sidebar-padding-vertical $sidebar-padding-horizontal;
+          display: block;
+          width: $sidebar-width;
+          text-align: left;
+          @include value();
+        }
+
+        hr {
+          clear: both;
+          border-top: $border-width dotted $border-color;
+          margin: 0 $sidebar-padding-horizontal;
+          margin-top: -1px; // hide duplicates
+        }
+
+      }
+
+    }
+
+    &.vacuum-only {
+      
+      .altitude-sl {
+        display: none;
+      }
+      
+      .twr.altitude-vac {
+        display: block !important;
+      }
+      
+    }
     
+  }
+
+  .section + .section {
+    border-top: $border-width solid $border-color;
   }
   
 }

@@ -1,0 +1,43 @@
+
+@import 'values';
+
+@import 'term-sidebar';
+
+body.list main {
+
+  header {
+    padding: $unit $body-padding-horizontal;
+
+    h1.title {
+      @include title();
+      display: inline-block;
+    }
+
+  }
+
+  .contents .list {
+    background-color: $body-background;
+    
+    border: $border-width solid $border-color;
+    border-radius: $border-radius;
+
+    list-style-type: none;
+    
+    li {
+
+      a {
+        padding: $list-padding-vertical $body-padding-horizontal;
+        display: block;
+        @include title();
+        font-size: 100%;
+      }
+      
+    }
+
+    li + li {
+      border-top: $border-width solid $border-color;
+    }
+
+  }
+
+}

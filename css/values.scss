@@ -42,12 +42,19 @@ $header-height: $header-logo-height;
 
 $header-total-height: $header-height;
 
+// LIST
+
+$list-padding-vertical: $unit * 2;
+
 // SIDEBAR
 
 $sidebar-spacing: $unit;
 $sidebar-padding-horizontal: $unit * 3;
 $sidebar-padding-vertical: $unit * 1;
 
+$sidebar-width: 360px;
+$sidebar-key-width: 160px;
+$sidebar-value-width: $sidebar-width - $sidebar-key-width;
 // BORDER
 
 $border-width: 1px;
@@ -73,4 +80,21 @@ $footer-padding-vertical: $unit * 2;
   font-family: serif;
   font-weight: 100;
   font-style: italic;
+}
+
+@mixin clear() {
+  &:after {
+    display: block;
+    content: '';
+    clear: both;
+  }
+}
+
+@mixin a() {
+  box-shadow: inset 0 -3px 0 $link-color;
+}
+
+@mixin value() {
+  font-family: monoOne, monospace;
+  font-weight: bold;
 }

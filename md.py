@@ -63,7 +63,7 @@ class LinkTreeprocessor(Treeprocessor):
     if term:
       return term.get_term_link()
     else:
-      log.warning('redirecting nonexistent term "' + url + '" to Wikipedia')
+#      log.warning('redirecting nonexistent term "' + url + '" to Wikipedia')
       return self.redirect_wikipedia(url)
 
   def redirect_wikipedia(self, url):

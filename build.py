@@ -4,9 +4,9 @@ import os
 
 import log
 
-from page import Page, AboutPage
+from page import Page, AboutPage, ListPage
 from author import AuthorPage
-from term import TermPage
+from term import *
 from template import Templates
 import config
 
@@ -64,9 +64,18 @@ class Builder:
 
   def get_terms(self):
     terms = self.get_file_list(config.input_path['terms'])
-    for a in terms:
-      self.terms.append(TermPage(self, a))
+    for t in terms:
+      self.terms.append(TermPage(self, t))
+      
     self.parse_terms()
+    self.get_synonyms()
+
+  def get_synonyms(self):
+    self.synonyms = {}
+    for t in self.terms:
+      synonyms = t.get_synonyms()
+      for x in synonyms:
+        self.synonyms[t.get_slug()] = x
 
   def parse_authors(self):
     for a in self.authors:
@@ -75,6 +84,12 @@ class Builder:
   def parse_terms(self):
     for t in self.terms:
       t.parse()
+      
+    for t in self.terms:
+      t.collect()
+
+    for t in self.terms:
+      t.post_collect()
 
   def get_author(self, slug):
     for a in self.authors:
@@ -84,7 +99,7 @@ class Builder:
 
   def get_term(self, slug):
     for t in self.terms:
-      if t.get_slug() == slug:
+      if t.refers_to(slug):
         return t
     return None
 
@@ -109,6 +124,22 @@ class Builder:
   def build_terms(self):
     for t in self.terms:
       t.build()
+
+  def build_list(self, name, pages, output_root=None):
+    if not output_root: output_root = name
+    output_root = self.languages.get('list-' + output_root + '-output-root')
+    page = ListPage(self, pages, output_root)
+    page.set_title(self.languages.get('list-' + name + '-title'))
+    page.set_slug(self.languages.get('list-' + name + '-slug'))
+    page.build()
+  
+  def build_terms_list(self):
+    self.build_list('terms', self.terms)
+
+    self.build_list('companies', [x for x in self.terms if type(x.get_term()) is CompanyTerm])
+    self.build_list('engines', [x for x in self.terms if type(x.get_term()) is EngineTerm])
+    self.build_list('rockets', [x for x in self.terms if type(x.get_term()) is RocketTerm])
+    self.build_list('spacecraft', [x for x in self.terms if type(x.get_term()) is SpacecraftTerm])
   
   def build(self, language=None):
     self.templates = Templates(self.path['templates'])
@@ -122,6 +153,8 @@ class Builder:
     self.build_stylesheet()
     
     self.build_logo()
+
+    self.build_terms_list()
     
 if __name__ == '__main__':
   b = Builder(language='en-us')
