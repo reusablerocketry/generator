@@ -32,8 +32,7 @@ main {
         
         @include mobile() {
           color: white;
-          height: $header-logo-height;
-          line-height: $header-logo-height;
+          padding: $unit * 2 0;
         }
         
       }
@@ -62,8 +61,8 @@ main {
       @include lt-small {
         padding: $unit $body-padding-horizontal-small;
 
-        h1.name {
-          font-size: 120%;
+        h1 {
+          font-size: 150%;
           font-weight: bold;
         }
       }
