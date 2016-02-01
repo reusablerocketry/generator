@@ -18,6 +18,59 @@ main {
       margin: 0;
     }
     
+    header.title {
+      padding: $unit $body-padding-horizontal;
+
+      @include mobile() {
+        background-color: $theme-color;
+        padding: 0;
+      }
+      
+      h1 {
+        @include title();
+        display: inline-block;
+        
+        @include mobile() {
+          color: white;
+          height: $header-logo-height;
+          line-height: $header-logo-height;
+        }
+        
+      }
+
+      h2.authors {
+        padding-top: $unit;
+        @include author();
+
+        .author {
+          color: mix($theme-color, $body-foreground, 80%);
+          font-weight: bold;
+        }
+        
+        @include mobile() {
+          color: white;
+
+          .author {
+            color: white;
+          }
+          
+        }
+        
+      }
+
+      
+      @include lt-small {
+        padding: $unit $body-padding-horizontal-small;
+
+        h1.name {
+          font-size: 120%;
+          font-weight: bold;
+        }
+      }
+
+      
+    }
+
     .text {
 
       a {
