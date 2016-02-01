@@ -109,6 +109,14 @@
 
     #header-toggle {
       display: none;
+
+      height: $header-height;
+      width: $header-height;
+      
+      img {
+        height: $header-height;
+        width: $header-height;
+      }
       
       @include mobile {
         display: block;
