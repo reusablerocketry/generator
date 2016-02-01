@@ -142,6 +142,8 @@ class Builder:
   
   def build_logo(self):
     os.system('cp logo/ ' + self.path['output'] + ' -r')
+    os.system('cp img/ ' + self.path['output'] + ' -r')
+    os.system('cp templates/scripts/* ' + self.path['output'] + ' -r')
 
   def build_terms(self):
     for t in self.terms:

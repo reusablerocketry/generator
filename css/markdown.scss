@@ -5,12 +5,24 @@
 
 body.markdown main {
 
-  header {
+  header.title {
     padding: $unit $body-padding-horizontal;
 
+    @include mobile() {
+      background-color: $theme-color;
+      padding: 0;
+    }
+    
     h1.name {
       @include title();
       display: inline-block;
+      
+      @include mobile() {
+        color: white;
+        height: $header-logo-height;
+        line-height: $header-logo-height;
+      }
+      
     }
 
     h2.authors {
@@ -20,6 +32,15 @@ body.markdown main {
       .author {
         color: mix($theme-color, $body-foreground, 80%);
         font-weight: bold;
+      }
+      
+      @include mobile() {
+        color: white;
+
+        .author {
+          color: white;
+        }
+        
       }
       
     }
@@ -47,6 +68,10 @@ body.markdown main {
 
     @include clear();
 
+    @include mobile() {
+      border-top: 0;
+    }
+    
     @include lt-small() {
       border-left-width: 0;
       border-right-width: 0;

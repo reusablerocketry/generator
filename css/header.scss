@@ -11,11 +11,21 @@
 
   line-height: 0;
 
+  z-index: 100;
+
   .container {
+
+    z-index: 300;
 
     max-width: $page-width;
     margin: 0 auto;
     position: relative;
+
+    height: $header-total-height;
+
+    @include mobile {
+      background-color: $theme-color;
+    }
 
     #logo {
       background-color: $theme-color;
@@ -23,12 +33,17 @@
       display: inline-block;
       width: $header-logo-width;
       height: $header-logo-height;
+      overflow: hidden;
 
       img {
-        width: 100%;
-        height: 100%;
+        width: $header-logo-width;
+        height: $header-logo-height;
       }
       
+      @include lt-small {
+        width: $header-logo-height;
+      }
+
     }
 
     .categories {
@@ -39,6 +54,21 @@
 
       margin-left: $header-spacing * 2;
 
+      @include mobile {
+        pointer-events: none;
+        margin-left: 0;
+        width: 100%;
+        background-color: $theme-color;
+        border: 3px solid darken($theme-color, 20%);
+        border-width: 3px 0;
+        height: auto;
+        transform-origin: 0% 0%;
+        transform: scaleY(0);
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        z-index: -100;
+      }
+      
       a {
         color: $header-foreground;
         
@@ -52,6 +82,11 @@
         padding: 0 $header-spacing;
         vertical-align: top;
 
+        @include mobile {
+          color: white;
+          display: block;
+        }
+        
         &.active {
           color: $header-foreground-active;
           box-shadow: inset 0 -$border-width 0 $theme-color;
@@ -63,10 +98,49 @@
         position: absolute;
         right: 0;
         top: 0;
+        
+        @include mobile {
+          position: static;
+        }
+        
       }
       
     }
 
+    #header-toggle {
+      display: none;
+      
+      @include mobile {
+        display: block;
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+
+    }
+
   }
   
+}
+
+@include mobile {
+  body.header-open {
+    #header {
+      .categories {
+        pointer-events: all;
+        display: block !important;
+        transform: scaleY(1);
+        opacity: 1;
+      }
+
+      #header-toggle {
+        -moz-transform: scaleY(-1);
+        -o-transform: scaleY(-1);
+        -webkit-transform: scaleY(-1);
+        transform: scaleY(-1);
+        filter: FlipV;
+        -ms-filter: "FlipV";
+      }
+    }
+  }
 }

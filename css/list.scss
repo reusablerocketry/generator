@@ -23,20 +23,27 @@ body.list main {
 
     list-style-type: none;
     
+    @include lt-small() {
+      border-left-width: 0;
+      border-right-width: 0;
+      border-radius: 0;
+      padding-left: $body-padding-horizontal-small;
+      padding-right: $body-padding-horizontal-small;
+    }
+    
     li {
 
-      a {
+      a, &.empty-list {
         padding: $list-padding-vertical $body-padding-horizontal;
         display: block;
         @include title();
         font-size: 100%;
-      }
-
-      &.empty-list {
-        padding: $list-padding-vertical $body-padding-horizontal;
-        display: block;
-        @include title();
-        font-size: 100%;
+        
+        @include lt-small() {
+          padding-left: $body-padding-horizontal-small;
+          padding-right: $body-padding-horizontal-small;
+        }
+        
       }
       
     }

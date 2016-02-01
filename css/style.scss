@@ -25,5 +25,10 @@ body {
   color: $body-foreground;
   display: flex;
   flex-direction: column;
+  
+  transition: background-color 0.3s ease;
 }
 
+body.header-open {
+  background-color: rgba(black, 0.7);
+}
