@@ -55,3 +55,6 @@ def boolean(s):
 def dv(isp, start, end):
   return isp * 9.81 * math.log(start / end)
       
+def comma_int(number):
+  return '{:,}'.format(int(number))
+

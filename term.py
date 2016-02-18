@@ -10,7 +10,7 @@ import util
 from page import DynamicPage
 
 ################################################
-# CompanyTerm
+# Term
 ################################################
 
 class Term:
@@ -80,7 +80,7 @@ class Term:
     self.stages.append([slug, number, reserved])
 
   def add_engine(self, slug):
-    number = 1
+    number = None
     if type(slug) is type(''):
       values = slug.split(None, 1)
       if len(values) == 2:
@@ -158,10 +158,6 @@ class Term:
     self.engines = self.get_things(self.engines, 'engine', EngineTerm)
     self.stages = self.get_things(self.stages, 'stage', StageTerm)
 
-    for m in self.manufacturers:
-      term = m.get_term()
-      if term: term.add(self)
-
   def post_collect(self):
     self.engines = self.get_engines()
 
@@ -233,7 +229,7 @@ class ObjectTerm(Term):
     return self.mass[t]
       
   def get_mass_string(self, dry=True):
-    return str(int(self.get_mass(dry)) or self.term_page.get_string('object-mass-unknown')) + self.term_page.get_string('kg')
+    return str(util.comma_int(self.get_mass(dry)) or self.term_page.get_string('object-mass-unknown')) + self.term_page.get_string('kg')
 
   def set_mass(self, value, dry=True):
     t = 'wet'
@@ -274,6 +270,10 @@ class VehicleTerm(ObjectTerm):
     super().__init__(page)
     self.term_type = 'vehicle'
 
+    self.dv = 0
+
+    self.vac = False
+
     self.stages = []
 
     self.configurations = []
@@ -284,6 +284,12 @@ class VehicleTerm(ObjectTerm):
       'leo': 0,
       'gto': 0
     }
+
+  def get_dv(self):
+    return self.dv
+      
+  def get_dv_string(self):
+    return str(util.comma_int(self.get_dv()) or self.term_page.get_string('vehicle-deltav-unknown')) + self.term_page.get_string('deltav')
 
   def get_isp(self, vac=False):
     if not self.engines: return 1
@@ -319,6 +325,8 @@ class VehicleTerm(ObjectTerm):
   def get_arg(self, key):
     if key == 'configuration-name':
       return self.get_name()
+    elif key == 'string-deltav-no-payload':
+      return self.term_page.get_string('deltav-no-payload')
     elif key == 'configuration-stages':
       return self.get_stage_number()
     else:
@@ -332,6 +340,8 @@ class VehicleTerm(ObjectTerm):
       return True
     elif key == 'stages':
       self.set_stage_number(value)
+    elif key == 'vacuum':
+      self.vac = util.boolean(value)
     elif key == 'configuration':
       self.add_configuration(value)
     elif key == 'payload':
@@ -356,6 +366,7 @@ class EngineTerm(ObjectTerm):
     self.term_type = 'engine'
 
     self.engine_type = None
+    self.engine_cycle = None
 
     self.vacuum_only = False
 
@@ -369,6 +380,7 @@ class EngineTerm(ObjectTerm):
     self.isp = [float(x) for x in values]
 
   def get_isp(self, vac=False):
+    if self.vacuum_only: return self.isp[1]
     if vac:
       return self.isp[1]
     return self.isp[0]
@@ -404,6 +416,18 @@ class EngineTerm(ObjectTerm):
 
   def get_engine_type(self):
     return self.term_page.get_string('engine-type-' + (self.engine_type or 'unknown'))
+
+  ########################
+
+  def set_engine_cycle(self, engine_cycle):
+    if engine_cycle in ['pressure-fed', 'gas-generator', 'staged', 'ffsc']:
+      self.engine_cycle = engine_cycle
+    else:
+      log.warning('incorrect engine cycle "' + engine_type + '"', self.get_unique_identifier())
+
+  def get_engine_cycle(self):
+    if self.engine_cycle:
+      return self.engine_cycle.get_abbreviation()
 
   ########################
   
@@ -460,8 +484,17 @@ class EngineTerm(ObjectTerm):
     elif key == 'engine-thrust':
       return self.get_thrust()
     
+    elif key == 'engine-cycle':
+      return self.get_engine_cycle()
+    
+    elif key == 'string-engine-mass':
+      return self.term_page.get_string('mass')
+    
     elif key == 'engine-mass':
       return self.get_mass_string(True)
+    
+    elif key == 'string-engine-cycle':
+      return self.term_page.get_string('engine-cycle')
     
     elif key == 'string-engine-twr-sea-level':
       return self.term_page.get_string('engine-twr-sea-level')
@@ -530,6 +563,8 @@ class EngineTerm(ObjectTerm):
       return True
     elif key == 'engine-type':
       self.set_engine_type(value)
+    elif key == 'engine-cycle':
+      self.set_engine_cycle(value)
     elif key == 'engine-vacuum-only':
       self.set_engine_vacuum_only(value)
     elif key == 'engine-fuel':
@@ -555,7 +590,7 @@ class EngineTerm(ObjectTerm):
 
   def get_sidebar_item(self, extra=None):
     number = ''
-    if extra:
+    if extra and extra[1]:
       number = str(extra[1]) + 'x '
     return self.builder.templates.render('term-sidebar-item-engine.html', self, {'engine-number': str(number)})
 
@@ -564,6 +599,8 @@ class EngineTerm(ObjectTerm):
     
     self.engine_fuel = self.builder.get_term(self.engine_fuel)
     self.engine_oxidizer = self.builder.get_term(self.engine_oxidizer)
+
+    self.engine_cycle = self.builder.get_term(self.engine_cycle)
 
     if not self.engine_fuel:
       log.warning('no fuel type given', self.get_unique_identifier())
@@ -614,25 +651,11 @@ class RocketTerm(VehicleTerm):
     html += self.get_sidebar_list(self.manufacturers, 'manufacturer')
     html += self.get_sidebar_list(self.configurations, 'configuration')
     html += self.get_sidebar_list(self.engines, 'engine')
+    html += self.get_sidebar_list(self.rockets, 'rocket-family')
     return html
 
   def get_sidebar_item(self):
     return self.builder.templates.render('term-sidebar-item-rocket.html', self)
-
-  def post_collect(self):
-    super().post_collect()
-    for e in self.engines:
-      term = e[0].get_term()
-      if term: term.add_rocket(self.term_page)
-
-    for c in self.configurations:
-      term = c.get_term()
-      if term:
-        term.add_rocket(self.term_page)
-        for s in term.stages:
-          t = s[0].get_term()
-          if t: t.add_rocket(self.term_page)
-      
       
 ################################################
 # Spacecraft
@@ -660,6 +683,18 @@ class SpacecraftTerm(VehicleTerm):
     html += self.get_sidebar_list(self.rockets, 'rocket')
     return html
 
+  def calculate_payloads(self):
+    if len(self.configurations) < 1:
+      return None
+    return self.configurations[0].calculate_payloads()
+    
+  def post_collect(self):
+    return
+    payloads = self.calculate_payloads()
+    if not payloads: return
+    for x in payloads:
+      self.payloads[x] = payloads[x]
+
 ################################################
 # Stage
 ################################################
@@ -677,7 +712,7 @@ class StageTerm(VehicleTerm):
       
     if reserved_dv not in self.reserved_mass:
       reserved_mass = 0
-      isp = self.get_isp(True)
+      isp = (self.get_isp(self.vac) + self.get_isp(True)) / 2
       
       total_dv = util.dv(isp, self.get_mass(False), self.get_mass(True))
       iter_dv = 100000
@@ -693,7 +728,7 @@ class StageTerm(VehicleTerm):
         
   def calculate_dv(self, extra_mass=0, reserved_dv=0, mass_step=10):
 
-    isp = self.get_isp(True)
+    isp = (self.get_isp(self.vac) + self.get_isp(True)) / 2
     
     start = self.get_mass(False) + extra_mass
     end = self.get_mass(True) + extra_mass + self.get_reserved_mass(reserved_dv, mass_step)
@@ -704,11 +739,27 @@ class StageTerm(VehicleTerm):
   def get_arg(self, key):
     if key == 'stage-name':
       return self.get_name()
+    
+    elif key == 'string-mass-dry':
+      return self.term_page.get_string('mass-dry')
+    elif key == 'string-mass-wet':
+      return self.term_page.get_string('mass-wet')
+    
+    elif key == 'stage-mass-dry':
+      return self.get_mass_string(True)
+    
+    elif key == 'stage-deltav':
+      return self.get_dv_string()
+    
+    elif key == 'stage-mass-wet':
+      return self.get_mass_string(False)
+    
     else:
       return super().get_arg(key)
     
   def get_sidebar_html(self):
     html = ''
+    html += self.builder.templates.render('term-sidebar-stage.html', self)
     html += self.get_sidebar_list(self.manufacturers, 'manufacturer')
     html += self.get_sidebar_list(self.engines, 'engine')
     html += self.get_sidebar_list(self.rockets, 'rocket-stage-used-on')
@@ -719,11 +770,8 @@ class StageTerm(VehicleTerm):
     return self.builder.templates.render('term-sidebar-item-stage.html', self)
 
   def post_collect(self):
-    super().post_collect()
-    for e in self.engines:
-      term = e[0].get_term()
-      if term: term.add_stage(self.term_page)
-      
+    self.dv = self.calculate_dv()
+
 ################################################
 # Configuration
 ################################################
@@ -742,9 +790,28 @@ class ConfigurationTerm(VehicleTerm):
         engines.extend(stage[0].get_term().get_engines())
     return engines
 
+  def get_mass(self, dry=False):
+    stages = [[x[0].get_term(), x[1], x[2]] for x in self.stages if x[0].get_term()]
+
+    return self.get_stages_mass(stages, dry)
+
   def get_arg(self, key):
     if key == 'string-payload-approximate-warning':
       return self.term_page.get_string('payload-approximate-warning')
+    
+    elif key == 'string-mass-dry':
+      return self.term_page.get_string('mass-dry')
+    elif key == 'string-mass-wet':
+      return self.term_page.get_string('mass-wet')
+    
+    elif key == 'configuration-deltav':
+      return self.get_dv_string()
+    
+    elif key == 'configuration-mass-dry':
+      return self.get_mass_string(True)
+    elif key == 'configuration-mass-wet':
+      return self.get_mass_string(False)
+    
     elif key == 'string-payload-leo':
       return self.term_page.get_string('payload-leo')
     elif key == 'string-payload-gto':
@@ -794,7 +861,7 @@ class ConfigurationTerm(VehicleTerm):
     return mass
       
   def calculate_payload(self, dv, mass_step=10):
-    mass = 0
+    mass = -mass_step
     iter_dv = 1000000
     while iter_dv > dv:
       mass += mass_step
@@ -808,23 +875,18 @@ class ConfigurationTerm(VehicleTerm):
       'tmi': 9700 + 4200,
     }
 
+    payload = {}
+
     for x in dests:
-      self.set_payload(self.calculate_payload(dests[x]), x)
+      payload[x] = self.calculate_payload(dests[x])
+    return payload
 
   def post_collect(self):
-    for s in self.stages:
-      term = s[0].get_term()
-      if term: term.add_configuration(self.term_page)
-
-    for r in self.rockets:
-      term = r.get_term()
-      if term:
-        for c in term.configurations:
-          term = c.get_term()
-          if term and term is not self:
-            term.add_configuration(self.term_page)
-      
-    self.calculate_payloads()
+    self.dv = self.calculate_dv(0)
+    
+    payloads = self.calculate_payloads()
+    for x in payloads:
+      self.payload[x] = payloads[x]
 
 ################################################
 # CompanyTerm
@@ -857,6 +919,7 @@ class CompanyTerm(Term):
     html = ''
     html += self.get_sidebar_list(self.rockets, 'rocket')
     html += self.get_sidebar_list(self.spacecraft, 'spacecraft')
+    html += self.get_sidebar_list(self.engines, 'engine')
     return html
 
   def get_sidebar_item(self):

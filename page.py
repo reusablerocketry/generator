@@ -82,7 +82,7 @@ class Page:
     self.abbreviation = abbreviation
 
   def set_slug(self, slug):
-    self.slug = slug
+    self.slug = util.to_slug(slug)
 
   def refers_to(self, slug):
     if util.to_slug(self.get_title()) == slug: return True
@@ -258,13 +258,13 @@ class MarkdownPage(Page):
             
       self.header.append([key, value])
 
-    text += f.read()
-    self.content = Markdown(self.builder, text)
-    f.close()
-
     for line in self.header:
       if not self.parse_header_line(line[0], line[1]):
         log.warning('unknown key "' + line[0] + '"', self.get_unique_identifier())
+
+    text += f.read()
+    self.content = Markdown(self.builder, text, self.get_unique_identifier())
+    f.close()
 
   ########################
   # RENDERING

@@ -63,7 +63,7 @@ class LinkTreeprocessor(Treeprocessor):
     if term:
       return term.get_term_link()
     else:
-#      log.warning('redirecting nonexistent term "' + url + '" to Wikipedia')
+      log.warning('redirecting nonexistent term "' + url + '" to Wikipedia', self.markdown.requester)
       return self.redirect_wikipedia(url)
 
   def redirect_wikipedia(self, url):
@@ -99,9 +99,10 @@ class LinkTreeprocessor(Treeprocessor):
 
 class Markdown:
 
-  def __init__(self, builder, content=''):
+  def __init__(self, builder, content='', requester=None):
     self.builder = builder
-    
+
+    self.requester = requester
     self.content = content
     self.md = None
     self.html = ''
@@ -118,6 +119,7 @@ class Markdown:
     
     self.md = markdown.Markdown(extensions=[ImageExtension(), LinkExtension()], output_format='html5')
     self.md.builder = self.builder
+    self.md.requester = self.requester
     self.html = self.md.convert(self.content)
 
   def get_html(self):

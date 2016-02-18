@@ -116,6 +116,7 @@ class Builder:
     return None
 
   def get_term(self, slug):
+    slug = util.to_slug(slug)
     for t in self.terms:
       if t.refers_to(slug):
         return t
